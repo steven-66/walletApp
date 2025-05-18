@@ -46,7 +46,25 @@ This repository contains the implementation of a **Wallet Application** backend 
      ```bash
      docker exec -it wallet_cli_app ./wallet-cli
      ```
-
+   - Once you enter the app, you will be able to see the following CLI prompts to interact with the application.
+     ```
+      Wallet App CLI
+      ----------
+      1. Deposit Money
+      2. Withdraw Money
+      3. Check Balance
+      4. View Transaction History
+      5. Transfer Money
+      6. Exit
+      Enter your choice:
+     ```
+   - There is some sample data in the database for testing.
+     ```
+     user_id: 1 amount: 1000
+     user_id: 2 amount: 100
+     user_id: 3 amount: 100
+     ```
+   
 4. **Run Unit Tests**:
    - Run unit tests directly on your local machine:
      ```bash
@@ -78,19 +96,17 @@ This repository contains the implementation of a **Wallet Application** backend 
    - Make sure the idempotency of the transfer operation, so that the same transfer operation can be retried for a single request.
    - Implement write-through Redis caching for strong data consistency and reduce load on DB. i.e if the user frequently checks their balance, the balance should be cached for a certain period of time.
 
-4. **Data Consistency**
+2. **Data Consistency**
    - For the transfer/deposit/withdraw operation, ensure that the entire operation is atomic. We can either implement a database transaction with `For Update` sql statement to achieve row-level lock, or use a distributed lock to ensure that the transfer is atomic.
    - Consider implementing a pessimistic read-write lock to handle concurrent access to the balance table if the concurrency of read is high. For example, adding a version number to the balance table and checking the version number before updating the balance, or compare the original amount when updating the balance using query `update balance set amount = amount + <amount> where id = <id> and amount = <original_amount>`.
    
-2. **Logging + metrics**
+3. **Logging + metrics**
     - Add structured logging (e.g., using `logrus`) for better observability and debugging.
     - Implement metrics for monitoring and alerting when certain db operations are not working as expected.
 
-3. **Database Schema**
+4. **Database Schema**
     - Add indexes on frequently queried columns (e.g., `user_id` in the `balance` table) for improved query performance.
-
-
-
+   
 5. **Testing**
     - Add integration tests to validate the end-to-end functionality of the application.
 

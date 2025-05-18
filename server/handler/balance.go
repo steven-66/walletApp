@@ -51,7 +51,7 @@ func (c *BalanceHandler) Deposit(ctx context.Context, request *dto.DepositReques
 	transaction := &model.Transaction{
 		UserID: userID,
 		Amount: amount,
-		Type:   model.TransactionTypeWithdraw,
+		Type:   model.TransactionTypeDeposit,
 	}
 	err = c.TransactionRepo.CreateTransaction(ctx, transaction)
 	if err != nil {

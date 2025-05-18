@@ -31,7 +31,7 @@ This repository contains the implementation of a **Wallet Application** backend 
 ### Steps to Run
 1. **Clone the Repository**:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/steven-66/walletApp.git
    cd walletApp
    ```
 
@@ -74,14 +74,13 @@ This repository contains the implementation of a **Wallet Application** backend 
 ## Areas to Be Improved
 
 1. **Performance Optimization**
-   - Implement a pessimistic read-write lock to handle concurrent access to the balance table.
    - Setup a message queue (e.g., Kafka) to handle the transfer of money between wallets. This will help to decouple the balance table from the transfer process, reducing the load on the balance table.
    - Make sure the idempotency of the transfer operation, so that the same transfer operation can be retried for a single request.
    - Implement write-through Redis caching for strong data consistency and reduce load on DB. i.e if the user frequently checks their balance, the balance should be cached for a certain period of time.
 
 4. **Data Consistency**
-   - For the transfer/deposit/withdraw operation, ensure that the transfer is atomic. We can either implement a database transaction like `row level` lock, or use a distributed lock to ensure that the transfer is atomic.
-   - Consider implementing a pessimistic read-write lock to handle concurrent access to the balance table if the concurrency is high. For example, adding a version number to the balance table and checking the version number before updating the balance, or compare the original amount when updating the balance using query `update balance set amount = amount + <amount> where id = <id> and amount = <original_amount>`.
+   - For the transfer/deposit/withdraw operation, ensure that the entire operation is atomic. We can either implement a database transaction with `For Update` sql statement to achieve row-level lock, or use a distributed lock to ensure that the transfer is atomic.
+   - Consider implementing a pessimistic read-write lock to handle concurrent access to the balance table if the concurrency of read is high. For example, adding a version number to the balance table and checking the version number before updating the balance, or compare the original amount when updating the balance using query `update balance set amount = amount + <amount> where id = <id> and amount = <original_amount>`.
    
 2. **Logging + metrics**
     - Add structured logging (e.g., using `logrus`) for better observability and debugging.
